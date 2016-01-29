@@ -676,7 +676,8 @@ static void W_Touch_Grenade( edict_t *ent, edict_t *other, cplane_t *plane, int 
 		return;
 
 	// don't explode on doors and plats that take damage
-	if( !other->takedamage || ISBRUSHMODEL( other->s.modelindex ) )
+	// racesow - remove check || ISBRUSHMODEL( other->s.modelindex )
+	if( !other->takedamage )
 	{
 		G_AddEvent( ent, EV_GRENADE_BOUNCE, ( ent->s.effects & EF_STRONG_WEAPON ) ? FIRE_MODE_STRONG : FIRE_MODE_WEAK, true );
 		return;
@@ -726,7 +727,8 @@ edict_t *W_Fire_Grenade( edict_t *self, vec3_t start, vec3_t angles, int speed, 
 
 	if( aim_up )
 	{
-		angles[PITCH] -= 5; // aim some degrees upwards from view dir
+		if( !GS_RaceGametype() ) // racesow
+			angles[PITCH] -= 10; // aim some degrees upwards from view dir
 
 		// clamp to front side of the player
 		angles[PITCH] += -90; // rotate to make easier the check
@@ -751,6 +753,7 @@ edict_t *W_Fire_Grenade( edict_t *self, vec3_t start, vec3_t angles, int speed, 
 	{
 		grenade->s.modelindex = trap_ModelIndex( PATH_GRENADE_STRONG_MODEL );
 		grenade->s.effects |= EF_STRONG_WEAPON;
+		grenade->health = 2; // racesow - bounce count
 	}
 	else
 	{
