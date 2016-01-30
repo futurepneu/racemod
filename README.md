@@ -5,7 +5,7 @@ Source modification of the "warsow_201_sdk". - Trying to add as many racesow fea
 ## 30.01.2016:
 
 gs_public.h
- * fix: set "DEFAULT_DASHSPEED" to racesow default value (475)
+ * EDIT: fix: set back "DEFAULT_DASHSPEED" to racesow default value (450) according to ale
 
 gs_pmove.c
  * fix: maximum specfly speed set to racesow default (10000)
@@ -16,6 +16,13 @@ g_spawn.cpp, g_local.h, g_trigger.cpp
 
 g_weapon.cpp
  * Added racesow specific hack for plasma shooters which shoot on buttons with SURF_NOIMPACT
+
+gs_qrespath.h
+ * Sound for pickup megahealth changed to "sounds/items/health_25" (racesow default)
+ * Sound for FALLDEATH changed to "*death" (racesow default)
+
+g_awards.cpp
+ * Disabling item timing awards like racesow did 
 
 ## 29.01.2016:
 
