@@ -22,7 +22,18 @@ gs_qrespath.h
  * Sound for FALLDEATH changed to "*death" (racesow default)
 
 g_awards.cpp
- * Disabling item timing awards like racesow did 
+ * Disabling item timing awards like racesow did
+
+cg_scoreboard.cpp
+ * Changed String "challengers" to "spectating you" (racesow default)
+
+g_pmodels.cpp
+ * Don't show HeadIcon when raceGhosts is enabled (racesow default)
+
+cg_lents.cpp
+ * Make raceGhosts affect ProjectileFireTrail and ProjectileTrail (racesow default)
+
+
 
 ## 29.01.2016:
 

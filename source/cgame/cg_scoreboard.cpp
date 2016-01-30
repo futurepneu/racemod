@@ -230,7 +230,7 @@ static int SCR_DrawChallengers( const char **ptrptr, int x, int y, int panelWidt
 	yoffset = height;
 	if( pass ) {
 		trap_SCR_DrawString( x + xoffset, y + yoffset, ALIGN_CENTER_TOP,
-			CG_TranslateString( "Challengers" ), font, colorCyan );
+			CG_TranslateString( "Spectating you" ), font, colorCyan ); // racesow
 	}
 	yoffset += height;
 
