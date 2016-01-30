@@ -11,6 +11,9 @@ gs_pmove.c
  * fix: maximum specfly speed set to racesow default (10000)
  * fix: Added racesow specific specfly behavior (Acceleration...)
 
+g_spawn.cpp, g_local.h, g_trigger.cpp
+ * Added racesow support for target_push
+
 ## 29.01.2016:
 
 g_func.cpp
