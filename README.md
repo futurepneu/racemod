@@ -14,6 +14,9 @@ gs_pmove.c
 g_spawn.cpp, g_local.h, g_trigger.cpp
  * Added racesow support for target_push
 
+g_weapon.cpp
+ * Added racesow specific hack for plasma shooters which shoot on buttons with SURF_NOIMPACT
+
 ## 29.01.2016:
 
 g_func.cpp
