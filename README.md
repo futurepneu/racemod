@@ -42,6 +42,12 @@ cg_screen.cpp
  * Changed cg_showPressedKeys to racesow default value
  * Changed cg_scoreboardWidthScale to racesow default value
 
+cg_ents.cpp
+ * Added another racesow fix concerning raceGhosts
+
+cg_hud.cpp
+ * Added racesow fix to round speed better
+
 ## 29.01.2016:
 
 g_func.cpp

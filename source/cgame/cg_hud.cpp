@@ -181,12 +181,12 @@ static float _getspeed( void )
 
 static int CG_GetSpeed( const void *parameter )
 {
-	return (int)_getspeed();
+	return (int)( _getspeed() + 0.5f ); // racesow - round speed better
 }
 
 static int CG_GetSpeedVertical( const void *parameter )
 {
-	return cg.predictedPlayerState.pmove.velocity[2];
+	return (int)( cg.predictedPlayerState.pmove.velocity[2] + 0.5f ); // racesow - round speed better
 }
 
 static int CG_GetFPS( const void *parameter )
