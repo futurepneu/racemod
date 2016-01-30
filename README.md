@@ -33,7 +33,14 @@ g_pmodels.cpp
 cg_lents.cpp
  * Make raceGhosts affect ProjectileFireTrail and ProjectileTrail (racesow default)
 
+g_items.cpp
+ * Added racesow specific hack to avoid trigger spamming on certain maps
+ * Disabled item timers (racesow default)
 
+cg_screen.cpp
+ * Changed cg_crosshair and cg_crosshair_size to racesow default values
+ * Changed cg_showPressedKeys to racesow default value
+ * Changed cg_scoreboardWidthScale to racesow default value
 
 ## 29.01.2016:
 
