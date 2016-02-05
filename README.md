@@ -2,6 +2,12 @@
 Source modification of the "warsow_201_sdk". - Trying to add as many racesow features as possible.
 
 # Changelog:
+## 06.02.2016:
+
+p_weapon.cpp, g_racesow.cpp, g_racesow.h, g_local.h, g_main.cpp, g_spawn.cpp
+ * Added racesow prestep for grenades, rockets and plasma
+
+
 ## 05.02.2016:
 
 cg_main.cpp
