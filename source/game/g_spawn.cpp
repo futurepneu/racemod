@@ -247,6 +247,13 @@ bool G_CallSpawn( edict_t *ent )
 		return true;
 	}
 
+	// racesow - Give gametype definitions precedence over C ones
+	// see if there's a spawn definition in the gametype scripts
+	ent->scriptSpawned = G_asCallMapEntitySpawnScript( ent->classname, ent );
+	if( ent->scriptSpawned ) {
+		return true; // handled by the script
+	}
+
 	// check normal spawn functions
 	for( s = spawns; s->name; s++ )
 	{
@@ -256,12 +263,7 @@ bool G_CallSpawn( edict_t *ent )
 			return true;
 		}
 	}
-
-	// see if there's a spawn definition in the gametype scripts
-	ent->scriptSpawned = G_asCallMapEntitySpawnScript( ent->classname, ent );
-	if( ent->scriptSpawned ) {
-		return true; // handled by the script
-	}
+	// !racesow
 
 	if( sv_cheats->integer || developer->integer ) // mappers load their maps with devmap
 		G_Printf( "%s doesn't have a spawn function\n", ent->classname );

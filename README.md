@@ -25,6 +25,15 @@ g_trigger.cpp
 g_clip.cpp, cg_predict.cpp, cg_local.h, g_local.h, gs_misc.c, gs_pmove.c, gs_public.h
  * Added racesow flavored G_PMoveTouchTriggers
 
+p_weapon.cpp, cg_events.cpp
+ * Added racesow fix for triggering autoswitch
+
+g_utils.cpp
+ * Added racesow fix for solid mask
+
+g_spawn.cpp
+ * Added racesow fix for giving gametype definitions precedence over C ones
+
 
 ## 30.01.2016:
 

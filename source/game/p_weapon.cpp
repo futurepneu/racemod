@@ -94,6 +94,7 @@ bool Pickup_Weapon( edict_t *other, const gsitem_t *item, int flags, int ammo_co
 	weapondef = GS_GetWeaponDef( item->tag );
 
 	other->r.client->ps.inventory[item->tag]++;
+	G_AddPlayerStateEvent( other->r.client, PSEV_PICKUP, ( item->flags & IT_WEAPON ? item->tag : 0 ) ); // racesow - trigger autoswitch
 
 	// never allow the player to carry more than 2 copies of the same weapon
 	if( other->r.client->ps.inventory[item->tag] > item->inventory_max )

@@ -1731,6 +1731,13 @@ static void CG_FirePlayerStateEvents( void )
 							if( best < parm )
 								CG_UseItem( va( "%i", parm ) );
 						}
+
+						// racesow - always switch weapons
+						else if( cg_weaponAutoSwitch->integer )
+						{
+							CG_UseItem( va( "%i", parm ) );
+						}
+						// !racesow
 					}
 				}
 			}
