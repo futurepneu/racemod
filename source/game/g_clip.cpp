@@ -983,8 +983,15 @@ void GClip_SetBrushModel( edict_t *ent, const char *name )
 	struct cmodel_s *cmodel;
 
 	if( !name )
+	{
 		G_Error( "GClip_SetBrushModel: NULL model in '%s'", 
 		ent->classname ? ent->classname : "no classname" );
+		// racesow
+		GClip_UnlinkEntity( ent );
+		G_FreeEdict( ent );
+		return;
+		// !racesow
+	}
 
 	if( !name[0] )
 	{
@@ -1087,7 +1094,13 @@ void GClip_TouchTriggers( edict_t *ent )
 	}
 }
 
-void G_PMoveTouchTriggers( pmove_t *pm )
+// racesow
+/**
+ * Racesow flavored G_PMoveTouchTriggers
+ * @param pm              Player pmove information, marks end of search volume
+ * @param previous_origin Last player location, marks start of search volume
+ */
+void G_PMoveTouchTriggers( pmove_t *pm, vec3_t previous_origin )
 {
 	int i, num;
 	edict_t	*hit;
@@ -1124,9 +1137,19 @@ void G_PMoveTouchTriggers( pmove_t *pm )
 
 	GClip_LinkEntity( ent );
 
-	VectorAdd( pm->playerState->pmove.origin, pm->mins, mins );
-	VectorAdd( pm->playerState->pmove.origin, pm->maxs, maxs );
-
+	for( i = 0; i < 3; i++ )
+	{
+		if( previous_origin[i] < ent->s.origin[i] )
+		{
+			mins[i] = previous_origin[i] + pm->mins[i];
+			maxs[i] = ent->s.origin[i] + pm->maxs[i];
+		}
+		else
+		{
+			mins[i] = ent->s.origin[i] + pm->mins[i];
+			maxs[i] = previous_origin[i] + pm->maxs[i];
+		}
+	}
 	num = GClip_AreaEdicts( mins, maxs, touch, MAX_EDICTS, AREA_TRIGGERS, 0 );
 
 	// be careful, it is possible to have an entity in this
@@ -1149,6 +1172,7 @@ void G_PMoveTouchTriggers( pmove_t *pm )
 		G_CallTouch( hit, ent, NULL, 0 );
 	}
 }
+// !racesow
 
 /*
 * GClip_FindBoxInRadius

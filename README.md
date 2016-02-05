@@ -2,6 +2,30 @@
 Source modification of the "warsow_201_sdk". - Trying to add as many racesow features as possible.
 
 # Changelog:
+## 05.02.2016:
+
+cg_main.cpp
+ * Allow cg_thirdPerson 1
+
+gs_public.h
+ * fix: set "DEFAULT_DASHSPEED" to 451 as it was in racesow 1.5
+
+g_clip.cpp
+ * Added racesow fix for some NULL model error
+
+g_local.h
+ * Added racesow fix: fix maps with many models: allows for 50 non-inlane models to load
+
+g_target.cpp
+ * Added racesow fix for target_speaker (activator)
+
+g_trigger.cpp
+ * Added racesow fix for triggers (activator)
+
+g_clip.cpp, cg_predict.cpp, cg_local.h, g_local.h, gs_misc.c, gs_pmove.c, gs_public.h
+ * Added racesow flavored G_PMoveTouchTriggers
+
+
 ## 30.01.2016:
 
 gs_public.h
@@ -47,6 +71,7 @@ cg_ents.cpp
 
 cg_hud.cpp
  * Added racesow fix to round speed better
+
 
 ## 29.01.2016:
 
