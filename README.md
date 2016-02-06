@@ -23,6 +23,12 @@ g_racesow.cpp, g_racesow.h, g_weapon.cpp
 g_racesow.cpp, g_racesow.h, g_ascript.cpp
  * Added racesow fix for removing projectiles
 
+sv_oob.c
+ * Send first heartbeat after 30 seconds (racesow default)
+
+sv_init.c, g_racesow.cpp, g_racesow.h, g_cmds.cpp
+ * Added racesow cmd for printing previous map (prevmap)
+
 
 ## 05.02.2016:
 

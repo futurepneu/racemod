@@ -25,3 +25,4 @@ void RS_Init( void );
 void RS_Shutdown( void );
 void RS_Think( void );
 void RS_removeProjectiles( edict_t *owner );
+void RS_Cmd_Prevmap_f( edict_t *ent );

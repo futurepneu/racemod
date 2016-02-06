@@ -79,3 +79,12 @@ void RS_removeProjectiles( edict_t *owner )
 			G_FreeEdict( ent );
 	}
 }
+
+/**
+ * Print previous mapname for a player
+ */
+void RS_Cmd_Prevmap_f( edict_t *ent )
+{
+	cvar_t *prevmap = trap_Cvar_Get( "rs_prevmap", "", CVAR_ARCHIVE );
+	G_PrintMsg( ent, prevmap->string );
+}
