@@ -798,9 +798,14 @@ void G_FireWeapon( edict_t *ent, int parm )
 			G_ProjectileDistancePrestep( projectile, prestep ); // racesow - use our prestep
 	}
 
+	// racesow - enable no_antilag skipping if rs_rocket_antilag is 1
+	if( GS_RaceGametype() && ( ( rs_rocket_antilag->integer && projectile->s.type == ET_ROCKET ) ) )
+		return;
+	// !racesow
+
 #ifdef NO_ROCKET_ANTILAG
 	// hack for disabling antilag on rockets
-	if( projectile && projectile->s.type == ET_ROCKET )
+	if( projectile && ( projectile->s.type == ET_ROCKET || projectile->s.type == ET_PLASMA ) ) // racesow - disable plasma too
 	{
 		int timeOffset;
 

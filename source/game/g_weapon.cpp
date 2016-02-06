@@ -862,11 +862,19 @@ static void W_Touch_Rocket( edict_t *ent, edict_t *other, cplane_t *plane, int s
 edict_t *W_Fire_Rocket( edict_t *self, vec3_t start, vec3_t angles, int speed, float damage, int minKnockback, int maxKnockback, int stun, int minDamage, int radius, int timeout, int mod, int timeDelta )
 {
 	edict_t	*rocket;
+	// racesow - water rockets are slower
+	int new_speed = self->waterlevel > 1 ?
+		rs_rocket_speed->integer * 0.5 :
+		rs_rocket_speed->integer;
+	// !racesow
 
 	if( GS_Instagib() )
 		damage = 9999;
 
-	rocket = W_Fire_LinearProjectile( self, start, angles, speed, damage, minKnockback, maxKnockback, stun, minDamage, radius, timeout, timeDelta );
+	rocket = W_Fire_LinearProjectile( self, start, angles, new_speed,
+		damage, rs_rocket_minKnockback->integer,
+		rs_rocket_maxKnockback->integer, stun, minDamage,
+		rs_rocket_splash->integer, timeout, timeDelta ); // racesow
 
 	rocket->s.type = ET_ROCKET; //rocket trail sfx
 	if( mod == MOD_ROCKET_S )
@@ -1031,7 +1039,11 @@ edict_t *W_Fire_Plasma( edict_t *self, vec3_t start, vec3_t angles, float damage
 	if( GS_Instagib() )
 		damage = 9999;
 
-	plasma = W_Fire_LinearProjectile( self, start, angles, speed, damage, minKnockback, maxKnockback, stun, minDamage, radius, timeout, timeDelta );
+	plasma = W_Fire_LinearProjectile( self, start, angles,
+		rs_plasma_speed->integer, damage,
+		rs_plasma_minKnockback->integer,
+		rs_plasma_maxKnockback->integer, stun, minDamage,
+		rs_plasma_splash->integer, timeout, timeDelta ); // racesow
 	plasma->s.type = ET_PLASMA;
 	plasma->classname = "plasma";
 	plasma->style = mod;

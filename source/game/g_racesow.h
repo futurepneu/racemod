@@ -8,7 +8,16 @@ extern cvar_t *rs_grenade_timeout;
 extern cvar_t *rs_grenade_gravity;
 extern cvar_t *rs_grenade_friction;
 extern cvar_t *rs_grenade_prestep;
+extern cvar_t *rs_rocket_minKnockback;
+extern cvar_t *rs_rocket_maxKnockback;
+extern cvar_t *rs_rocket_splash;
+extern cvar_t *rs_rocket_speed;
 extern cvar_t *rs_rocket_prestep;
+extern cvar_t *rs_rocket_antilag;
+extern cvar_t *rs_plasma_minKnockback;
+extern cvar_t *rs_plasma_maxKnockback;
+extern cvar_t *rs_plasma_splash;
+extern cvar_t *rs_plasma_speed;
 extern cvar_t *rs_plasma_prestep;
 extern cvar_t *rs_plasma_hack;
 

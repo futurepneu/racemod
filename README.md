@@ -15,9 +15,10 @@ sv_init.c
 
 p_weapon.cpp, g_racesow.cpp, g_racesow.h
  * Added racesow fix for plasmahack
+ * Added racesow fix for no antilag on rl and pg
 
 g_racesow.cpp, g_racesow.h, g_weapon.cpp
- * Added racesow grenade behavior (without racesow splashfrac code; guess some values could be optimized...)
+ * Added racesow grenade, rocket and plasma behavior (without racesow splashfrac code; guess some values could be optimized...)
 
 
 ## 05.02.2016:
