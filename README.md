@@ -7,6 +7,9 @@ Source modification of the "warsow_201_sdk". - Trying to add as many racesow fea
 cg_effects.cpp, cg_local.h, cg_main.cpp, cg_pmodels.cpp
  * Added racesow playertrails
 
+cg_ents.cpp, cg_events.cpp, cg_local.h, cg_main.cpp
+ * Added racesow raceghostsvolume
+
 
 ## 06.02.2016:
 

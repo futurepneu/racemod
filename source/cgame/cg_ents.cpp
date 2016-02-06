@@ -1865,10 +1865,25 @@ void CG_SoundEntityNewState( centity_t *cent )
 
 void CG_EntityLoopSound( entity_state_t *state, float attenuation )
 {
+	float amp, volume; // racesow
+
 	if( !state->sound )
 		return;
 
-	trap_S_AddLoopSound( cgs.soundPrecache[state->sound], state->number, cg_volume_effects->value, ISVIEWERENTITY( state->number ) ? ATTN_NONE : ATTN_IDLE );
+	// racesow
+	if( cg_raceGhosts->integer && (unsigned int)state->ownerNum != cg.predictedPlayerState.POVnum )
+	{
+		amp = cg_raceGhostsVolume->value;
+		clamp( amp, 0.0f, 1.0f );
+	}
+	else
+	{
+		amp = 1.0f;
+	}
+	volume = amp * cg_volume_effects->value;
+	// !racesow
+
+	trap_S_AddLoopSound( cgs.soundPrecache[state->sound], state->number, volume, ISVIEWERENTITY( state->number ) ? ATTN_NONE : ATTN_IDLE );
 }
 
 /*

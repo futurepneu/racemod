@@ -61,6 +61,7 @@ cvar_t *cg_showPlayerTrails;
 cvar_t *cg_playerTrailsAlpha;
 cvar_t *cg_playerTrailsColor;
 cvar_t *cg_playerTrailsSize;
+cvar_t *cg_raceGhostsVolume;
 // !racesow
 
 cvar_t *cg_handOffset;
@@ -711,6 +712,7 @@ static void CG_RegisterVariables( void )
 	cg_playerTrailsAlpha = trap_Cvar_Get( "cg_playerTrailsAlpha", "1.0", CVAR_ARCHIVE );
 	cg_playerTrailsColor = trap_Cvar_Get( "cg_playerTrailsColor", "0.0 1.0 0.0", CVAR_ARCHIVE );
 	cg_playerTrailsSize = trap_Cvar_Get( "cg_playerTrailsSize", "1.5", CVAR_ARCHIVE );
+	cg_raceGhostsVolume = trap_Cvar_Get( "cg_raceGhostsVolume", "0.3", CVAR_ARCHIVE );
 	// !racesow
 	
 	cg_predict =	    trap_Cvar_Get( "cg_predict", "1", 0 );

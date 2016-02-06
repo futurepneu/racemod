@@ -19,6 +19,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "cg_local.h"
 
+// racesow
+/*
+* RS_RaceGhostsVolume
+* Modify the volume according to raceghosts settings
+*/
+static float RS_RaceGhostsVolume( bool owner, float baseVolume )
+{
+	if( !owner )
+	{
+		float fvol = cg_raceGhostsVolume->value;
+		clamp( fvol, 0.0f, 1.0f );
+		return baseVolume * fvol;
+	}
+	return baseVolume;
+}
+// !racesow
+
 /*
 * CG_Event_WeaponBeam
 */
@@ -267,12 +284,15 @@ void CG_LaserBeamEffect( centity_t *cent )
 	if( cg_weaponFlashes->integer )
 		cg_entPModels[cent->current.number].flash_time = cg.time + CG_GetWeaponInfo( WEAP_LASERGUN )->flashTime;
 
+	float fvol = RS_RaceGhostsVolume( ISVIEWERENTITY( cent->current.number ), 1.0f ); // racesow - raceghostsvolume
 	if( sound )
 	{
 		if( ISVIEWERENTITY( cent->current.number ) )
-			trap_S_AddLoopSound( sound, cent->current.number, cg_volume_effects->value, ATTN_NONE );
+			trap_S_AddLoopSound( sound, cent->current.number, fvol, ATTN_NONE );
 		else
-			trap_S_AddLoopSound( sound, cent->current.number, cg_volume_effects->value, ATTN_STATIC );
+			{
+			trap_S_AddLoopSound( sound, cent->current.number, fvol, ATTN_STATIC );
+		}
 	}
 
 	laserOwner = NULL;
@@ -329,6 +349,7 @@ void CG_Event_LaserBeam( int entNum, int weapon, int fireMode )
 static void CG_FireWeaponEvent( int entNum, int weapon, int fireMode )
 {
 	float attenuation;
+	float fvol = RS_RaceGhostsVolume( ISVIEWERENTITY( entNum ), cg_volume_effects->value );  // racesow - raceghostsvolume
 	struct sfx_s *sound = NULL;
 	weaponinfo_t *weaponInfo;
 
@@ -358,19 +379,21 @@ static void CG_FireWeaponEvent( int entNum, int weapon, int fireMode )
 	if( sound )
 	{
 		if( ISVIEWERENTITY( entNum ) )
-			trap_S_StartGlobalSound( sound, CHAN_MUZZLEFLASH, cg_volume_effects->value );
+			trap_S_StartGlobalSound( sound, CHAN_MUZZLEFLASH, fvol );
 		else
 			// fixed position is better for location, but the channels are used from worldspawn
 			// and openal runs out of channels quick on cheap cards. Relative sound uses per-entity channels.
-			trap_S_StartRelativeSound( sound, entNum, CHAN_MUZZLEFLASH, cg_volume_effects->value, attenuation );
+			trap_S_StartRelativeSound( sound, entNum, CHAN_MUZZLEFLASH, fvol, attenuation );
 
 		if( ( cg_entities[entNum].current.effects & EF_QUAD ) && ( weapon != WEAP_LASERGUN ) )
 		{
 			struct sfx_s *quadSfx = CG_MediaSfx( cgs.media.sfxQuadFireSound );
 			if( ISVIEWERENTITY( entNum ) )
-				trap_S_StartGlobalSound( quadSfx, CHAN_AUTO, cg_volume_effects->value );
+			{
+				trap_S_StartGlobalSound( quadSfx, CHAN_AUTO, fvol );
+			}
 			else
-				trap_S_StartRelativeSound( quadSfx, entNum, CHAN_AUTO, cg_volume_effects->value, attenuation );
+				trap_S_StartRelativeSound( quadSfx, entNum, CHAN_AUTO, fvol, attenuation );
 		}
 	}
 
@@ -662,8 +685,9 @@ static void CG_Event_FireMachinegun( vec3_t origin, vec3_t dir, int weapon, int 
 			}
 			else
 			{
+				float fvol = RS_RaceGhostsVolume( ISVIEWERENTITY( owner ), cg_volume_effects->value );  // racesow - raceghostsvolume
 				CG_ImpactPuffParticles( trace.endpos, trace.plane.normal, 1, 0.7, 1, 0.7, 0.0, 1.0, NULL );
-				trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxRic[ rand()%2 ] ), trace.endpos, CHAN_AUTO, cg_volume_effects->value, ATTN_STATIC );
+				trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxRic[ rand()%2 ] ), trace.endpos, CHAN_AUTO, fvol, ATTN_STATIC );
 			}
 		}
 	}
@@ -753,6 +777,7 @@ static void CG_Event_FireRiotgun( vec3_t origin, vec3_t dir, int weapon, int fir
 	vec3_t end;
 	gs_weapon_definition_t *weapondef = GS_GetWeaponDef( weapon );
 	firedef_t *firedef = ( firemode ) ? &weapondef->firedef : &weapondef->firedef_weak;
+	float fvol = RS_RaceGhostsVolume( ISVIEWERENTITY( owner ), cg_volume_effects->value );  // racesow - raceghostsvolume
 
 	CG_Fire_SunflowerPattern( origin, dir, &seed, owner, firedef->projectile_count, 
 		firedef->spread, firedef->v_spread, firedef->timeout, CG_BulletImpact );
@@ -766,12 +791,12 @@ static void CG_Event_FireRiotgun( vec3_t origin, vec3_t dir, int weapon, int fir
 		if( firedef->fire_mode == FIRE_MODE_STRONG )
 		{
 			trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxRiotgunStrongHit ), trace.endpos, CHAN_AUTO,
-				cg_volume_effects->value, ATTN_IDLE );
+				fvol, ATTN_IDLE );
 		}
 		else
 		{
 			trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxRiotgunWeakHit ), trace.endpos, CHAN_AUTO,
-				cg_volume_effects->value, ATTN_IDLE );
+				fvol, ATTN_IDLE );
 		}
 	}
 }
@@ -895,11 +920,13 @@ static void CG_StartVoiceTokenEffect( int entNum, int type, int vsay )
 */
 void CG_Event_Fall( entity_state_t *state, int parm )
 {
+	float fvol = RS_RaceGhostsVolume( ISVIEWERENTITY( state->number ), cg_volume_players->value );  // racesow - raceghostsvolume
+
 	if( ISVIEWERENTITY( state->number ) )
 	{
 		if( cg.frame.playerState.pmove.pm_type != PM_NORMAL )
 		{
-			CG_SexedSound( state->number, CHAN_AUTO, "*fall_0", cg_volume_players->value, state->attenuation );
+			CG_SexedSound( state->number, CHAN_AUTO, "*fall_0", fvol, state->attenuation );
 			return;
 		}
 
@@ -911,7 +938,7 @@ void CG_Event_Fall( entity_state_t *state, int parm )
 
 	if( parm > 10 )
 	{
-		CG_SexedSound( state->number, CHAN_PAIN, "*fall_2", cg_volume_players->value, state->attenuation );
+		CG_SexedSound( state->number, CHAN_PAIN, "*fall_2", fvol, state->attenuation );
 		switch( (int)brandom( 0, 3 ) )
 		{
 		case 0:
@@ -928,10 +955,10 @@ void CG_Event_Fall( entity_state_t *state, int parm )
 	}
 	else if( parm > 0 )
 	{
-		CG_SexedSound( state->number, CHAN_PAIN, "*fall_1", cg_volume_players->value, state->attenuation );
+		CG_SexedSound( state->number, CHAN_PAIN, "*fall_1", fvol, state->attenuation );
 	}
 	else
-		CG_SexedSound( state->number, CHAN_PAIN, "*fall_0", cg_volume_players->value, state->attenuation );
+		CG_SexedSound( state->number, CHAN_PAIN, "*fall_0", fvol, state->attenuation );
 
 	// smoke effect
 	if( parm > 0 && ( cg_cartoonEffects->integer & 2 ) )
@@ -966,19 +993,20 @@ void CG_Event_Fall( entity_state_t *state, int parm )
 */
 void CG_Event_Pain( entity_state_t *state, int parm )
 {
+	float fvol = RS_RaceGhostsVolume( ISVIEWERENTITY( state->number ), cg_volume_players->value );  // racesow - raceghostsvolume
 	if( parm == PAIN_WARSHELL )
 	{
 		if( ISVIEWERENTITY( state->number ) )
 			trap_S_StartGlobalSound( CG_MediaSfx( cgs.media.sfxShellHit ), CHAN_PAIN, 
-				cg_volume_players->value );
+				fvol );
 		else
 			trap_S_StartRelativeSound( CG_MediaSfx( cgs.media.sfxShellHit ), state->number, CHAN_PAIN, 
-				cg_volume_players->value, state->attenuation );
+				fvol, state->attenuation );
 	}
 	else
 	{
 		CG_SexedSound( state->number, CHAN_PAIN, va( S_PLAYER_PAINS, 25*( parm+1 ) ), 
-			cg_volume_players->value, state->attenuation );
+			fvol, state->attenuation );
 	}
 
 	switch( (int)brandom( 0, 3 ) )
@@ -1001,7 +1029,8 @@ void CG_Event_Pain( entity_state_t *state, int parm )
 */
 void CG_Event_Die( entity_state_t *state, int parm )
 {
-	CG_SexedSound( state->number, CHAN_PAIN, S_PLAYER_DEATH, cg_volume_players->value, state->attenuation );
+	float fvol = RS_RaceGhostsVolume( ISVIEWERENTITY( state->number ), cg_volume_players->value );  // racesow - raceghostsvolume
+	CG_SexedSound( state->number, CHAN_PAIN, S_PLAYER_DEATH, fvol, state->attenuation );
 	
 	switch( parm )
 	{
@@ -1023,6 +1052,7 @@ void CG_Event_Die( entity_state_t *state, int parm )
 */
 void CG_Event_Dash( entity_state_t *state, int parm )
 {
+	float fvol = RS_RaceGhostsVolume( ISVIEWERENTITY( state->number ), cg_volume_players->value );  // racesow - raceghostsvolume
 	switch( parm )
 	{
 	default:
@@ -1030,22 +1060,22 @@ void CG_Event_Dash( entity_state_t *state, int parm )
 	case 0: // dash front
 		CG_PModel_AddAnimation( state->number, LEGS_DASH, 0, 0, EVENT_CHANNEL );
 		CG_SexedSound( state->number, CHAN_BODY, va( S_PLAYER_DASH_1_to_2, ( rand()&1 )+1 ), 
-			cg_volume_players->value, state->attenuation );
+			fvol, state->attenuation );
 		break;
 	case 1: // dash left
 		CG_PModel_AddAnimation( state->number, LEGS_DASH_LEFT, 0, 0, EVENT_CHANNEL );
 		CG_SexedSound( state->number, CHAN_BODY, va( S_PLAYER_DASH_1_to_2, ( rand()&1 )+1 ), 
-			cg_volume_players->value, state->attenuation );
+			fvol, state->attenuation );
 		break;
 	case 2: // dash right
 		CG_PModel_AddAnimation( state->number, LEGS_DASH_RIGHT, 0, 0, EVENT_CHANNEL );
 		CG_SexedSound( state->number, CHAN_BODY, va( S_PLAYER_DASH_1_to_2, ( rand()&1 )+1 ), 
-			cg_volume_players->value, state->attenuation );
+			fvol, state->attenuation );
 		break;
 	case 3: // dash back
 		CG_PModel_AddAnimation( state->number, LEGS_DASH_BACK, 0, 0, EVENT_CHANNEL );
 		CG_SexedSound( state->number, CHAN_BODY, va( S_PLAYER_DASH_1_to_2, ( rand()&1 )+1 ), 
-			cg_volume_players->value, state->attenuation );
+			fvol, state->attenuation );
 		break;
 	}
 
@@ -1061,6 +1091,7 @@ void CG_Event_Dash( entity_state_t *state, int parm )
 void CG_Event_WallJump( entity_state_t *state, int parm, int ev )
 {
 	vec3_t normal, forward, right;
+	float fvol = RS_RaceGhostsVolume( ISVIEWERENTITY( state->number ), cg_volume_effects->value );  // racesow - raceghostsvolume
 
 	ByteToDir( parm, normal );
 
@@ -1079,14 +1110,14 @@ void CG_Event_WallJump( entity_state_t *state, int parm, int ev )
 	{
 		if( ISVIEWERENTITY( state->number ) )
 			trap_S_StartGlobalSound( CG_MediaSfx( cgs.media.sfxWalljumpFailed ), CHAN_BODY, 
-			cg_volume_effects->value );
+			fvol );
 		else
-			trap_S_StartRelativeSound( CG_MediaSfx( cgs.media.sfxWalljumpFailed ), state->number, CHAN_BODY, cg_volume_effects->value, ATTN_NORM );
+			trap_S_StartRelativeSound( CG_MediaSfx( cgs.media.sfxWalljumpFailed ), state->number, CHAN_BODY, fvol, ATTN_NORM );
 	}
 	else
 	{
 		CG_SexedSound( state->number, CHAN_BODY, va( S_PLAYER_WALLJUMP_1_to_2, ( rand()&1 )+1 ), 
-			cg_volume_players->value, state->attenuation );
+			fvol, state->attenuation );
 	
 		// smoke effect
 		if( cg_cartoonEffects->integer & 1 )
@@ -1104,8 +1135,9 @@ void CG_Event_WallJump( entity_state_t *state, int parm, int ev )
 */
 void CG_Event_DoubleJump( entity_state_t *state, int parm )
 {
+	float fvol = RS_RaceGhostsVolume( ISVIEWERENTITY( state->number ), cg_volume_players->value );  // racesow - raceghostsvolume
 	CG_SexedSound( state->number, CHAN_BODY, va( S_PLAYER_JUMP_1_to_2, ( rand()&1 )+1 ), 
-		cg_volume_players->value, state->attenuation );
+		fvol, state->attenuation );
 }
 
 /*
@@ -1116,6 +1148,7 @@ void CG_Event_Jump( entity_state_t *state, int parm )
 #define MOVEDIREPSILON 0.25f
 	centity_t *cent;
 	int xyspeedcheck;
+	float fvol = RS_RaceGhostsVolume( ISVIEWERENTITY( state->number ), cg_volume_players->value );  // racesow - raceghostsvolume
 
 	cent = &cg_entities[state->number];
 	xyspeedcheck = SQRTFAST( cent->animVelocity[0]*cent->animVelocity[0] + cent->animVelocity[1]*cent->animVelocity[1] );
@@ -1123,7 +1156,7 @@ void CG_Event_Jump( entity_state_t *state, int parm )
 	{                      // the player is jumping on the same place, not running
 		CG_PModel_AddAnimation( state->number, LEGS_JUMP_NEUTRAL, 0, 0, EVENT_CHANNEL );
 		CG_SexedSound( state->number, CHAN_BODY, va( S_PLAYER_JUMP_1_to_2, ( rand()&1 )+1 ), 
-			cg_volume_players->value, state->attenuation );
+			fvol, state->attenuation );
 	}
 	else
 	{
@@ -1145,20 +1178,20 @@ void CG_Event_Jump( entity_state_t *state, int parm )
 			{
 				CG_PModel_AddAnimation( state->number, LEGS_JUMP_LEG2, 0, 0, EVENT_CHANNEL );
 				CG_SexedSound( state->number, CHAN_BODY, va( S_PLAYER_JUMP_1_to_2, ( rand()&1 )+1 ), 
-					cg_volume_players->value, state->attenuation );
+					fvol, state->attenuation );
 			}
 			else
 			{
 				CG_PModel_AddAnimation( state->number, LEGS_JUMP_LEG1, 0, 0, EVENT_CHANNEL );
 				CG_SexedSound( state->number, CHAN_BODY, va( S_PLAYER_JUMP_1_to_2, ( rand()&1 )+1 ), 
-					cg_volume_players->value, state->attenuation );
+					fvol, state->attenuation );
 			}
 		}
 		else
 		{
 			CG_PModel_AddAnimation( state->number, LEGS_JUMP_NEUTRAL, 0, 0, EVENT_CHANNEL );
 			CG_SexedSound( state->number, CHAN_BODY, va( S_PLAYER_JUMP_1_to_2, ( rand()&1 )+1 ), 
-				cg_volume_players->value, state->attenuation );
+				fvol, state->attenuation );
 		}
 	}
 #undef MOVEDIREPSILON
@@ -1177,6 +1210,13 @@ void CG_EntityEvent( entity_state_t *ent, int ev, int parm, bool predicted )
 
 	if( viewer && ( ev < PREDICTABLE_EVENTS_MAX ) && ( predicted != cg.view.playerPrediction ) )
 		return;
+
+	// racesow - skip all explosions
+	float fvol = RS_RaceGhostsVolume( viewer | ISVIEWERENTITY( ent->ownerNum ), cg_volume_players->value );
+	float fvol_players = RS_RaceGhostsVolume( viewer | ISVIEWERENTITY( ent->ownerNum ), cg_volume_players->value );
+	if( ev > EV_BLOOD && ev < EV_FREE2 && cg_raceGhosts->integer && !ISVIEWERENTITY( ent->ownerNum ) )
+		return;
+	// !racesow
 
 	switch( ev )
 	{
@@ -1203,9 +1243,9 @@ void CG_EntityEvent( entity_state_t *ent, int ev, int parm, bool predicted )
 			cg.predictedWeaponSwitch = 0;
 
 		if( viewer )
-			trap_S_StartGlobalSound( CG_MediaSfx( cgs.media.sfxWeaponUp ), CHAN_AUTO, cg_volume_effects->value );
+			trap_S_StartGlobalSound( CG_MediaSfx( cgs.media.sfxWeaponUp ), CHAN_AUTO, fvol );
 		else
-			trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxWeaponUp ), ent->origin, CHAN_AUTO, cg_volume_effects->value, ATTN_NORM );
+			trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxWeaponUp ), ent->origin, CHAN_AUTO, fvol, ATTN_NORM );
 		break;
 
 	case EV_SMOOTHREFIREWEAPON: // the server never sends this event
@@ -1305,9 +1345,9 @@ void CG_EntityEvent( entity_state_t *ent, int ev, int parm, bool predicted )
 
 	case EV_NOAMMOCLICK:
 		if( viewer )
-			trap_S_StartGlobalSound( CG_MediaSfx( cgs.media.sfxWeaponUpNoAmmo ), CHAN_ITEM, cg_volume_effects->value );
+			trap_S_StartGlobalSound( CG_MediaSfx( cgs.media.sfxWeaponUpNoAmmo ), CHAN_ITEM, fvol );
 		else
-			trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxWeaponUpNoAmmo ), ent->origin, CHAN_ITEM, cg_volume_effects->value, ATTN_IDLE );
+			trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxWeaponUpNoAmmo ), ent->origin, CHAN_ITEM, fvol, ATTN_IDLE );
 		break;
 
 	case EV_DASH:
@@ -1329,7 +1369,7 @@ void CG_EntityEvent( entity_state_t *ent, int ev, int parm, bool predicted )
 
 	case EV_JUMP_PAD:
 		CG_SexedSound( ent->number, CHAN_BODY, va( S_PLAYER_JUMP_1_to_2, ( rand()&1 )+1 ), 
-			cg_volume_players->value, ent->attenuation );
+			fvol_players, ent->attenuation );
 		CG_PModel_AddAnimation( ent->number, LEGS_JUMP_NEUTRAL, 0, 0, EVENT_CHANNEL );
 		break;
 
@@ -1346,9 +1386,9 @@ void CG_EntityEvent( entity_state_t *ent, int ev, int parm, bool predicted )
 
 	case EV_SEXEDSOUND:
 		if( parm == 2 )
-			CG_SexedSound( ent->number, CHAN_AUTO, S_PLAYER_GASP, cg_volume_players->value, ent->attenuation );
+			CG_SexedSound( ent->number, CHAN_AUTO, S_PLAYER_GASP, fvol_players, ent->attenuation );
 		else if( parm == 1 )
-			CG_SexedSound( ent->number, CHAN_AUTO, S_PLAYER_DROWN, cg_volume_players->value, ent->attenuation );
+			CG_SexedSound( ent->number, CHAN_AUTO, S_PLAYER_DROWN, fvol_players, ent->attenuation );
 		break;
 
 	case EV_PAIN:
@@ -1400,7 +1440,7 @@ void CG_EntityEvent( entity_state_t *ent, int ev, int parm, bool predicted )
 		CG_BulletExplosion( ent->origin, dir, NULL );
 		CG_ParticleEffect( ent->origin, dir, 1.0f, 0.67f, 0.0f, 6 );
 		trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxRic[rand()%2] ), ent->origin, CHAN_AUTO,
-			cg_volume_effects->value, ATTN_STATIC );
+			fvol, ATTN_STATIC );
 		break;
 
 	case EV_LASER_SPARKS:
@@ -1413,7 +1453,7 @@ void CG_EntityEvent( entity_state_t *ent, int ev, int parm, bool predicted )
 		break;
 
 	case EV_GESTURE:
-		CG_SexedSound( ent->number, CHAN_BODY, "*taunt", cg_volume_players->value, ent->attenuation );
+		CG_SexedSound( ent->number, CHAN_BODY, "*taunt", fvol_players, ent->attenuation );
 		break;
 
 	case EV_DROP:
@@ -1427,7 +1467,7 @@ void CG_EntityEvent( entity_state_t *ent, int ev, int parm, bool predicted )
 	case EV_ITEM_RESPAWN:
 		cg_entities[ent->number].respawnTime = cg.time;
 		trap_S_StartRelativeSound( CG_MediaSfx( cgs.media.sfxItemRespawn ), ent->number, CHAN_AUTO,
-			cg_volume_effects->value, ATTN_IDLE );
+			fvol, ATTN_IDLE );
 		break;
 
 	case EV_PLAYER_RESPAWN:
@@ -1441,12 +1481,12 @@ void CG_EntityEvent( entity_state_t *ent, int ev, int parm, bool predicted )
 		if( ISVIEWERENTITY( ent->ownerNum ) )
 		{
 			trap_S_StartGlobalSound( CG_MediaSfx( cgs.media.sfxPlayerRespawn ), CHAN_AUTO,
-				cg_volume_effects->value );
+				fvol );
 		}
 		else
 		{
 			trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxPlayerRespawn ), ent->origin, CHAN_AUTO,
-				cg_volume_effects->value, ATTN_NORM );
+				fvol, ATTN_NORM );
 		}
 
 		if( ent->ownerNum && ent->ownerNum < gs.maxclients + 1 )
@@ -1460,12 +1500,12 @@ void CG_EntityEvent( entity_state_t *ent, int ev, int parm, bool predicted )
 		if( ISVIEWERENTITY( ent->ownerNum ) )
 		{
 			trap_S_StartGlobalSound( CG_MediaSfx( cgs.media.sfxTeleportIn ), CHAN_AUTO,
-				cg_volume_effects->value );
+				fvol );
 		}
 		else
 		{
 			trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxTeleportIn ), ent->origin, CHAN_AUTO,
-				cg_volume_effects->value, ATTN_NORM );
+				fvol, ATTN_NORM );
 		}
 
 		if( ent->ownerNum && ent->ownerNum < gs.maxclients + 1 )
@@ -1479,12 +1519,12 @@ void CG_EntityEvent( entity_state_t *ent, int ev, int parm, bool predicted )
 		if( ISVIEWERENTITY( ent->ownerNum ) )
 		{
 			trap_S_StartGlobalSound( CG_MediaSfx( cgs.media.sfxTeleportOut ), CHAN_AUTO,
-				cg_volume_effects->value );
+				fvol );
 		}
 		else
 		{
 			trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxTeleportOut ), ent->origin, CHAN_AUTO,
-				cg_volume_effects->value, ATTN_NORM );
+				fvol, ATTN_NORM );
 		}
 
 		if( ent->ownerNum && ent->ownerNum < gs.maxclients + 1 )
@@ -1499,12 +1539,12 @@ void CG_EntityEvent( entity_state_t *ent, int ev, int parm, bool predicted )
 		CG_PlasmaExplosion( ent->origin, dir, ent->firemode, (float)ent->weapon * 8.0f );
 		if( ent->firemode == FIRE_MODE_STRONG )
 		{
-			trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxPlasmaStrongHit ), ent->origin, CHAN_AUTO, cg_volume_effects->value, ATTN_IDLE );
+			trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxPlasmaStrongHit ), ent->origin, CHAN_AUTO, fvol, ATTN_IDLE );
 			CG_StartKickAnglesEffect( ent->origin, 50, ent->weapon * 8, 100 );
 		}
 		else
 		{
-			trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxPlasmaWeakHit ), ent->origin, CHAN_AUTO, cg_volume_effects->value, ATTN_IDLE );
+			trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxPlasmaWeakHit ), ent->origin, CHAN_AUTO, fvol, ATTN_IDLE );
 			CG_StartKickAnglesEffect( ent->origin, 30, ent->weapon * 8, 75 );
 		}
 		break;
@@ -1550,9 +1590,9 @@ void CG_EntityEvent( entity_state_t *ent, int ev, int parm, bool predicted )
 
 	case EV_GRENADE_BOUNCE:
 		if( parm == FIRE_MODE_STRONG )
-			trap_S_StartRelativeSound( CG_MediaSfx( cgs.media.sfxGrenadeStrongBounce[rand()&1] ), ent->number, CHAN_AUTO, cg_volume_effects->value, ATTN_IDLE );
+			trap_S_StartRelativeSound( CG_MediaSfx( cgs.media.sfxGrenadeStrongBounce[rand()&1] ), ent->number, CHAN_AUTO, fvol, ATTN_IDLE );
 		else
-			trap_S_StartRelativeSound( CG_MediaSfx( cgs.media.sfxGrenadeWeakBounce[rand()&1] ), ent->number, CHAN_AUTO, cg_volume_effects->value, ATTN_IDLE );
+			trap_S_StartRelativeSound( CG_MediaSfx( cgs.media.sfxGrenadeWeakBounce[rand()&1] ), ent->number, CHAN_AUTO, fvol, ATTN_IDLE );
 		break;
 
 	case EV_BLADE_IMPACT:
@@ -1565,17 +1605,17 @@ void CG_EntityEvent( entity_state_t *ent, int ev, int parm, bool predicted )
 		if( ent->skinnum > 64 )
 		{
 			trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxGunbladeStrongHit[2] ), ent->origin, CHAN_AUTO,
-				cg_volume_effects->value, ATTN_DISTANT );
+				fvol, ATTN_DISTANT );
 		}
 		else if( ent->skinnum > 34 )
 		{
 			trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxGunbladeStrongHit[1] ), ent->origin, CHAN_AUTO,
-				cg_volume_effects->value, ATTN_NORM );
+				fvol, ATTN_NORM );
 		}
 		else
 		{
 			trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxGunbladeStrongHit[0] ), ent->origin, CHAN_AUTO,
-				cg_volume_effects->value, ATTN_IDLE );
+				fvol, ATTN_IDLE );
 		}
 
 		//ent->skinnum is knockback value
@@ -1603,7 +1643,7 @@ void CG_EntityEvent( entity_state_t *ent, int ev, int parm, bool predicted )
 		{
 			vec3_t so;
 			CG_GetEntitySpatilization( ent->number, so, NULL );
-			trap_S_StartFixedSound( cgs.soundPrecache[parm], so, CHAN_AUTO, cg_volume_effects->value, ATTN_STATIC );
+			trap_S_StartFixedSound( cgs.soundPrecache[parm], so, CHAN_AUTO, fvol, ATTN_STATIC );
 		}
 		break;
 
