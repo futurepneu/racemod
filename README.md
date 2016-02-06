@@ -29,6 +29,12 @@ sv_oob.c
 sv_init.c, g_racesow.cpp, g_racesow.h, g_cmds.cpp
  * Added racesow cmd for printing previous map (prevmap)
 
+gs_weapondefs.c
+ * Changed rl reload frametime and projectile timeout to racesow defaults
+
+p_view.cpp, p_client.cpp, g_weapon.cpp, g_spawn.cpp, g_gametypes.h, g_gametypes.cpp, g_combat.cpp, g_ascript.cpp
+ * Added racesow gametype conditions
+
 
 ## 05.02.2016:
 

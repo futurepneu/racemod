@@ -149,6 +149,15 @@ int G_Projectile_HitStyle( edict_t *projectile, edict_t *target )
 	if( target->waterlevel > 1 )
 		return PROJECTILE_TOUCH_DIRECTHIT; // water hits are direct but don't count for awards
 
+	// racesow
+	if( projectile->r.owner->r.client &&
+		target->r.client &&
+		GS_RaceGametype() &&
+		target->team == projectile->r.owner->team &&
+		!level.gametype.playerInteraction )
+		return PROJECTILE_TOUCH_NOT;
+	// !racesow
+
 	attacker = ( projectile->r.owner && projectile->r.owner->r.client ) ? projectile->r.owner : NULL;
 
 	// see if the target is at ground or a less than a step of height
@@ -273,7 +282,7 @@ static edict_t *W_Fire_LinearProjectile( edict_t *self, vec3_t start, vec3_t ang
 	projectile->s.linearMovement = true;
 
 	projectile->r.solid = SOLID_YES;
-	projectile->r.clipmask = ( !GS_RaceGametype() ) ? MASK_SHOT : MASK_SOLID;
+	projectile->r.clipmask = ( !GS_RaceGametype() && !level.gametype.playerInteraction ) ? MASK_SHOT : MASK_SOLID; // racesow
 
 	projectile->r.svflags = SVF_PROJECTILE;
 	// enable me when drawing exception is added to cgame
@@ -343,6 +352,7 @@ static edict_t *W_Fire_TossProjectile( edict_t *self, vec3_t start, vec3_t angle
 	//projectile->s.modelindex = trap_ModelIndex ("models/objects/projectile/plasmagun/proj_plasmagun2.md3");
 	projectile->s.modelindex = 0;
 	projectile->r.owner = self;
+	projectile->s.ownerNum = ENTNUM( self ); // racesow
 	projectile->touch = W_Touch_Projectile; //generic one. Should be replaced after calling this func
 	projectile->nextThink = level.time + timeout;
 	projectile->think = G_FreeEdict;
@@ -387,7 +397,7 @@ void W_Fire_Blade( edict_t *self, int range, vec3_t start, vec3_t angles, float 
 	AngleVectors( angles, dir, NULL, NULL );
 	VectorMA( start, range, dir, end );
 
-	if( GS_RaceGametype() )
+	if( GS_RaceGametype() && !level.gametype.playerInteraction ) // racesow
 		mask = MASK_SOLID;
 
 	G_Trace4D( &trace, start, NULL, NULL, end, self, mask, timeDelta );
@@ -455,6 +465,7 @@ static void W_Touch_GunbladeBlast( edict_t *ent, edict_t *other, cplane_t *plane
 		event = G_SpawnEvent( EV_GUNBLADEBLAST_IMPACT, DirToByte( plane ? plane->normal : NULL ), ent->s.origin );
 		event->s.weapon = ( ( ent->projectileInfo.radius * 1/8 ) > 127 ) ? 127 : ( ent->projectileInfo.radius * 1/8 );
 		event->s.skinnum = ( ( ent->projectileInfo.maxKnockback * 1/8 ) > 255 ) ? 255 : ( ent->projectileInfo.maxKnockback * 1/8 );
+		event->s.ownerNum = ENTNUM( ent->r.owner ); // racesow
 	}
 
 	// free at next frame
@@ -645,6 +656,7 @@ static void W_Grenade_ExplodeDir( edict_t *ent, vec3_t normal )
 	event = G_SpawnEvent( EV_GRENADE_EXPLOSION, ( dir ? DirToByte( dir ) : 0 ), ent->s.origin );
 	event->s.firemode = ( ent->s.effects & EF_STRONG_WEAPON ) ? FIRE_MODE_STRONG : FIRE_MODE_WEAK;
 	event->s.weapon = radius;
+	event->s.ownerNum = ENTNUM( ent->r.owner ); // racesow
 
 	G_FreeEdict( ent );
 }
@@ -850,6 +862,7 @@ static void W_Touch_Rocket( edict_t *ent, edict_t *other, cplane_t *plane, int s
 		event = G_SpawnEvent( EV_ROCKET_EXPLOSION, DirToByte( plane ? plane->normal : NULL ), explosion_origin );
 		event->s.firemode = ( ent->s.effects & EF_STRONG_WEAPON ) ? FIRE_MODE_STRONG : FIRE_MODE_WEAK;
 		event->s.weapon = ( ( ent->projectileInfo.radius * 1/8 ) > 255 ) ? 255 : ( ent->projectileInfo.radius * 1/8 );
+		event->s.ownerNum = ENTNUM( ent->r.owner ); // racesow
 	}
 
 	// free the rocket at next frame
@@ -906,6 +919,7 @@ static void W_Plasma_Explosion( edict_t *ent, edict_t *ignore, cplane_t *plane, 
 	event = G_SpawnEvent( EV_PLASMA_EXPLOSION, DirToByte( plane ? plane->normal : NULL ), ent->s.origin );
 	event->s.firemode = ( ent->s.effects & EF_STRONG_WEAPON ) ? FIRE_MODE_STRONG : FIRE_MODE_WEAK;
 	event->s.weapon = radius & 127;
+	event->s.ownerNum = ENTNUM( ent->r.owner ); // racesow
 
 	G_RadiusDamage( ent, ent->r.owner, plane, ignore, ent->style );
 
@@ -970,7 +984,7 @@ void W_Plasma_Backtrace( edict_t *ent, const vec3_t start )
 	vec3_t oldorigin;
 	vec3_t mins = { -2, -2, -2 }, maxs = { 2, 2, 2 };
 
-	if( GS_RaceGametype() )
+	if( GS_RaceGametype() && !level.gametype.playerInteraction ) // racesow
 		return;
 
 	VectorCopy( ent->s.origin, oldorigin );
@@ -1099,6 +1113,7 @@ static void W_Touch_Bolt( edict_t *self, edict_t *other, cplane_t *plane, int su
 		VectorScale( invdir, -1, invdir );
 		event = G_SpawnEvent( EV_BOLT_EXPLOSION, DirToByte( invdir ), self->s.origin );
 		event->s.firemode = FIRE_MODE_WEAK;
+		event->s.ownerNum = ENTNUM( self->r.owner ); // racesow
 		if( other->r.client ) missed = false;
 	}
 	else if( !( surfFlags & SURF_NOIMPACT ) )
@@ -1106,6 +1121,7 @@ static void W_Touch_Bolt( edict_t *self, edict_t *other, cplane_t *plane, int su
 		// add explosion event
 		event = G_SpawnEvent( EV_BOLT_EXPLOSION, DirToByte( plane ? plane->normal : NULL ), self->s.origin );
 		event->s.firemode = FIRE_MODE_WEAK;
+		event->s.ownerNum = ENTNUM( self->r.owner ); // racesow
 	}
 
 	if( missed && self->r.client )
@@ -1145,7 +1161,7 @@ void W_Fire_Electrobolt_Combined( edict_t *self, vec3_t start, vec3_t angles, fl
 	hit = damaged = NULL;
 
 	mask = MASK_SHOT;
-	if( GS_RaceGametype() )
+	if( GS_RaceGametype() && !level.gametype.playerInteraction ) // racesow
 		mask = MASK_SOLID;
 
 	clamp_high( mindamage, maxdamage );
@@ -1243,7 +1259,7 @@ void W_Fire_Electrobolt_FullInstant( edict_t *self, vec3_t start, vec3_t angles,
 	hit = NULL;
 
 	mask = MASK_SHOT;
-	if( GS_RaceGametype() )
+	if( GS_RaceGametype() && !level.gametype.playerInteraction ) // racesow
 		mask = MASK_SOLID;
 
 	clamp_high( mindamage, maxdamage );
@@ -1362,7 +1378,7 @@ void W_Fire_Instagun( edict_t *self, vec3_t start, vec3_t angles, float damage, 
 	VectorCopy( start, from );
 	ignore = self;
 	mask = MASK_SHOT;
-	if( GS_RaceGametype() )
+	if( GS_RaceGametype() && !level.gametype.playerInteraction ) // racesow
 		mask = MASK_SOLID;
 	tr.ent = -1;
 	while( ignore )

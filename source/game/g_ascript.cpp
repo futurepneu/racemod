@@ -1194,6 +1194,13 @@ static const asProperty_t gametypedescr_Properties[] =
 	{ ASLIB_PROPERTY_DECL(uint, numBots), ASLIB_FOFFSET(gametype_descriptor_t, numBots ) },
 	{ ASLIB_PROPERTY_DECL(bool, dummyBots), ASLIB_FOFFSET(gametype_descriptor_t, dummyBots ) },
 
+	// racesow
+	{ ASLIB_PROPERTY_DECL(bool, autoInactivityRemove), ASLIB_FOFFSET(gametype_descriptor_t, autoInactivityRemove) },
+	{ ASLIB_PROPERTY_DECL(bool, playerInteraction), ASLIB_FOFFSET(gametype_descriptor_t, playerInteraction) },
+	{ ASLIB_PROPERTY_DECL(bool, freestyleMapFix), ASLIB_FOFFSET(gametype_descriptor_t, freestyleMapFix) },
+	{ ASLIB_PROPERTY_DECL(bool, enableDrowning), ASLIB_FOFFSET(gametype_descriptor_t, enableDrowning) },
+	// !racesow
+
 	ASLIB_PROPERTY_NULL
 };
 

@@ -175,6 +175,13 @@ typedef struct
 
 	int numBots;
 	bool dummyBots;
+
+	// racesow
+	bool autoInactivityRemove;
+	bool playerInteraction;
+	bool freestyleMapFix;
+	bool enableDrowning;
+	// !racesow
 } gametype_descriptor_t;
 
 typedef struct
