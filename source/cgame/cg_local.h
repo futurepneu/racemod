@@ -1115,6 +1115,15 @@ void CG_PLink( const vec3_t start, const vec3_t end, const vec4_t color, int fla
 //
 // cg_effects.c
 //
+
+// racesow
+extern cvar_t *cg_showPlayerTrails;
+extern cvar_t *cg_playerTrailsColor;
+extern cvar_t *cg_playerTrailsAlpha;
+extern cvar_t *cg_playerTrailsSize;
+void CG_AddLinearTrail( centity_t *cent, float lifetime );
+// !racesow
+
 void CG_ClearEffects( void );
 
 void CG_AddLightToScene( vec3_t org, float radius, float r, float g, float b );

@@ -56,6 +56,13 @@ cvar_t *cg_gunbob;
 
 cvar_t *developer;
 
+// racesow
+cvar_t *cg_showPlayerTrails;
+cvar_t *cg_playerTrailsAlpha;
+cvar_t *cg_playerTrailsColor;
+cvar_t *cg_playerTrailsSize;
+// !racesow
+
 cvar_t *cg_handOffset;
 cvar_t *cg_gun_fov;
 cvar_t *cg_gun_alpha;
@@ -699,6 +706,13 @@ static void CG_RegisterLightStyles( void )
 */
 static void CG_RegisterVariables( void )
 {
+	// racesow
+	cg_showPlayerTrails = trap_Cvar_Get( "cg_showPlayerTrails", "0", CVAR_ARCHIVE );
+	cg_playerTrailsAlpha = trap_Cvar_Get( "cg_playerTrailsAlpha", "1.0", CVAR_ARCHIVE );
+	cg_playerTrailsColor = trap_Cvar_Get( "cg_playerTrailsColor", "0.0 1.0 0.0", CVAR_ARCHIVE );
+	cg_playerTrailsSize = trap_Cvar_Get( "cg_playerTrailsSize", "1.5", CVAR_ARCHIVE );
+	// !racesow
+	
 	cg_predict =	    trap_Cvar_Get( "cg_predict", "1", 0 );
 	cg_predict_optimize = trap_Cvar_Get( "cg_predict_optimize", "1", 0 );
 	cg_showMiss =	    trap_Cvar_Get( "cg_showMiss", "0", 0 );

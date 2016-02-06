@@ -2,6 +2,12 @@
 Source modification of the "warsow_201_sdk". - Trying to add as many racesow features as possible.
 
 # Changelog:
+## 07.02.2016:
+
+cg_effects.cpp, cg_local.h, cg_main.cpp, cg_pmodels.cpp
+ * Added racesow playertrails
+
+
 ## 06.02.2016:
 
 p_weapon.cpp, g_racesow.cpp, g_racesow.h, g_local.h, g_main.cpp, g_spawn.cpp

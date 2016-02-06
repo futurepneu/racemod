@@ -550,6 +550,100 @@ static void CG_ClearParticles( void )
 	( p )->fog = true \
 	)
 
+// racesow - player trails
+/**
+ * CG_AddLinearTrail
+ * Add a partical trail following the given entity
+ * @param cent The entity to follow
+ * @param lifetime How long the particles should last in seconds (?? verify)
+ */
+void CG_AddLinearTrail( centity_t *cent, float lifetime )
+{
+	cparticle_t *p;
+	float r, g, b, a, s;
+
+	if( cg_numparticles + 1 > MAX_PARTICLES )
+		return;
+
+	if( cg_playerTrailsColor->string != NULL &&
+	    sscanf( cg_playerTrailsColor->string, "%f %f %f", &r, &g, &b ) == 3 )
+	{
+		if( r == -1.0f )
+			r = (float) rand()/RAND_MAX;
+
+		if( g == -1.0f )
+			g = (float) rand()/RAND_MAX;
+
+		if( b == -1.0f )
+			b = (float) rand()/RAND_MAX;
+
+		r = r < 0.0f ? 0.0f :
+		    r > 1.0f ? 1.0f : r;
+		g = g < 0.0f ? 0.0f :
+		    g > 1.0f ? 1.0f : g;
+		b = b < 0.0f ? 0.0f :
+		    b > 1.0f ? 1.0f : b;
+	} else if(cg_playerTrailsColor->integer == 1)
+	{
+		switch( cent->current.number )
+		{
+			case 1:  r = 1.0f;  g = 0.0f;  b = 0.0f;  break;
+			case 2:  r = 0.0f;  g = 1.0f;  b = 0.0f;  break;
+			case 3:  r = 0.0f;  g = 0.0f;  b = 1.0f;  break;
+			case 4:  r = 1.0f;  g = 1.0f;  b = 0.0f;  break;
+			case 5:  r = 1.0f;  g = 0.0f;  b = 1.0f;  break;
+			case 6:  r = 0.0f;  g = 1.0f;  b = 1.0f;  break;
+			case 7:  r = 1.0f;  g = 1.0f;  b = 1.0f;  break;
+			case 8:  r = 1.0f;  g = 0.5f;  b = 0.0f;  break;
+			case 9:  r = 1.0f;  g = 0.0f;  b = 0.5f;  break;
+			case 10: r = 0.25f; g = 0.0f;  b = 0.5f;  break;
+			case 11: r = 1.0f;  g = 0.25f; b = 0.25f; break;
+			case 12: r = 0.0f;  g = 0.0f;  b = 0.25f; break;
+			case 13: r = 0.0f;  g = 0.5f;  b = 0.0f;  break;
+			case 14: r = 0.5f;  g = 0.0f;  b = 0.0f;  break;
+			case 15: r = 0.25f; g = 0.5f;  b = 1.0f;  break;
+			case 16: r = 0.0f;  g = 0.0f;  b = 0.0f;  break;
+		}
+	}
+	else
+	{
+		r = 0.0f;
+		g = 1.0f;
+		b = 0.0f;
+	}
+
+	if( cg_playerTrailsAlpha->string != NULL &&
+	    sscanf( cg_playerTrailsAlpha->string, "%f", &a ) == 1 )
+	{
+		a = a < 0.0f ? 0.0f :
+		    a > 1.0f ? 1.0f : a;
+	}
+	else
+	{
+		a = 1.0f;
+	}
+
+	if( cg_playerTrailsSize->string != NULL &&
+	    sscanf( cg_playerTrailsSize->string, "%f", &s ) == 1 )
+	{
+		s = s < 0.0f ? 0.0f :
+		    s > 100.0f ? 1.0f : s;
+	}
+	else
+	{
+		s = 1.0f;
+	}
+
+	// Own player trail shows up when looking straight down
+	// maybe move particle a bit behind player
+	// maybe don't show own trail at all
+	p = &particles[cg_numparticles++];
+	CG_InitParticle( p, s, a, r, g, b, NULL );
+	VectorCopy( cent->ent.origin, p->org );
+	p->alphavel = -( 1.0f / lifetime );
+}
+// !racesow
+
 /*
 * CG_ParticleEffect
 * 
