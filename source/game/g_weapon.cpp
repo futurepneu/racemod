@@ -679,8 +679,26 @@ static void W_Touch_Grenade( edict_t *ent, edict_t *other, cplane_t *plane, int 
 	// racesow - remove check || ISBRUSHMODEL( other->s.modelindex )
 	if( !other->takedamage )
 	{
-		G_AddEvent( ent, EV_GRENADE_BOUNCE, ( ent->s.effects & EF_STRONG_WEAPON ) ? FIRE_MODE_STRONG : FIRE_MODE_WEAK, true );
-		return;
+		// racesow - make grenades bounce twice
+		if( ent->s.effects & EF_STRONG_WEAPON )
+			ent->health -= 1;
+
+		if( !( ent->s.effects & EF_STRONG_WEAPON ) ||
+		    ( ( VectorLength( ent->velocity ) && Q_rint( ent->health ) > 0 ) || ent->timeStamp + 350 > level.time ) )
+		{
+			// kill some velocity on each bounce
+			float fric;
+			static cvar_t *g_grenade_friction = NULL;
+
+			if( !g_grenade_friction )
+				g_grenade_friction = trap_Cvar_Get( "g_grenade_friction", "0.85", CVAR_DEVELOPER );
+
+			fric = bound( 0, rs_grenade_friction->value, 1 ); // racesow
+			VectorScale( ent->velocity, fric, ent->velocity );
+			G_AddEvent( ent, EV_GRENADE_BOUNCE, ( ent->s.effects & EF_STRONG_WEAPON ) ? FIRE_MODE_STRONG : FIRE_MODE_WEAK, true );
+			return;
+		}
+		// !racesow
 	}
 
 	if( other->takedamage )
@@ -738,7 +756,12 @@ edict_t *W_Fire_Grenade( edict_t *self, vec3_t start, vec3_t angles, int speed, 
 		while( angles[PITCH] > 360 ) angles[PITCH] -= 360;
 	}
 
-	grenade = W_Fire_TossProjectile( self, start, angles, speed, damage, minKnockback, maxKnockback, stun, minDamage, radius, timeout, timeDelta );
+	grenade = W_Fire_TossProjectile( self, start, angles,
+		rs_grenade_speed->integer, damage,
+		rs_grenade_minKnockback->integer,
+		rs_grenade_maxKnockback->integer,
+		stun, minDamage, rs_grenade_splash->integer,
+		rs_grenade_timeout->integer, timeDelta ); // racesow
 	VectorClear( grenade->s.angles );
 	grenade->style = mod;
 	grenade->s.type = ET_GRENADE;
@@ -747,6 +770,7 @@ edict_t *W_Fire_Grenade( edict_t *self, vec3_t start, vec3_t angles, int speed, 
 	grenade->use = NULL;
 	grenade->think = W_Grenade_Explode;
 	grenade->classname = "grenade";
+	grenade->gravity = rs_grenade_gravity->value; // racesow
 	grenade->enemy = NULL;
 
 	if( mod == MOD_GRENADE_S )

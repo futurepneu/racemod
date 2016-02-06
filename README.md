@@ -13,6 +13,13 @@ sv_game.c
 sv_init.c
  * Added racesow fix to allow 50 models to be loaded
 
+p_weapon.cpp, g_racesow.cpp, g_racesow.h
+ * Added racesow fix for plasmahack
+
+g_racesow.cpp, g_racesow.h, g_weapon.cpp
+ * Added racesow grenade behavior (without racesow splashfrac code; guess some values could be optimized...)
+
+
 ## 05.02.2016:
 
 cg_main.cpp
