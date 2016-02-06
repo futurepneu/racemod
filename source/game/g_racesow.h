@@ -24,3 +24,4 @@ extern cvar_t *rs_plasma_hack;
 void RS_Init( void );
 void RS_Shutdown( void );
 void RS_Think( void );
+void RS_removeProjectiles( edict_t *owner );

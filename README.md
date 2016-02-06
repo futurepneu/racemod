@@ -20,6 +20,9 @@ p_weapon.cpp, g_racesow.cpp, g_racesow.h
 g_racesow.cpp, g_racesow.h, g_weapon.cpp
  * Added racesow grenade, rocket and plasma behavior (without racesow splashfrac code; guess some values could be optimized...)
 
+g_racesow.cpp, g_racesow.h, g_ascript.cpp
+ * Added racesow fix for removing projectiles
+
 
 ## 05.02.2016:
 

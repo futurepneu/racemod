@@ -63,3 +63,19 @@ void RS_Shutdown( void )
 void RS_Think( void )
 {
 }
+
+/**
+ * RS_removeProjectiles
+ * Removes all projectiles for a given player
+ * @param owner The player whose projectiles to remove
+ */
+void RS_removeProjectiles( edict_t *owner )
+{
+	edict_t *ent;
+
+	for( ent = game.edicts + gs.maxclients; ENTNUM( ent ) < game.numentities; ent++ )
+	{
+		if( ent->r.inuse && !ent->r.client && ent->r.svflags & SVF_PROJECTILE && ent->r.solid != SOLID_NOT && ent->r.owner == owner )
+			G_FreeEdict( ent );
+	}
+}
