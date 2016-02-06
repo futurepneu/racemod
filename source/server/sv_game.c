@@ -341,6 +341,16 @@ static void SV_AddPureBSP( void )
 	const char *shader;
 
 	SV_AddPureFile( sv.configstrings[CS_WORLDMODEL] );
+
+	/* racesow
+	 * set sv_pure to "2" to avoid multiple downloads in pure mode
+	 * Maps use too many duplicate textures so we don't want to pure
+	 * check every one of them.
+	 */
+	if( sv_pure->integer & 2 )
+		return;
+	// !racesow
+
 	for( i = 0; ( shader = CM_ShaderrefName( svs.cms, i ) ); i++ )
 		SV_AddPureShader( shader );
 }

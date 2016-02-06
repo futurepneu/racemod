@@ -7,6 +7,11 @@ Source modification of the "warsow_201_sdk". - Trying to add as many racesow fea
 p_weapon.cpp, g_racesow.cpp, g_racesow.h, g_local.h, g_main.cpp, g_spawn.cpp
  * Added racesow prestep for grenades, rockets and plasma
 
+sv_game.c
+ * Added racesow fix to avoid multiple downloads in pure mode
+
+sv_init.c
+ * Added racesow fix to allow 50 models to be loaded
 
 ## 05.02.2016:
 
