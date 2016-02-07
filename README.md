@@ -16,6 +16,8 @@ gs_pmove.c
 cg_lents.cpp, cg_local.h, cg_main.cpp
  * Added racesow fix for ignoring tele effect
 
+cg_screen.cpp
+ * Changed racemod default clientHUD and specHUD to "ale"
 
 ## 06.02.2016:
 

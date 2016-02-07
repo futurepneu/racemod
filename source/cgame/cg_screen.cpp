@@ -329,8 +329,8 @@ void CG_ScreenInit( void )
 	cg_crosshair_strong_color = trap_Cvar_Get( "cg_crosshair_strong_color", "255 255 255", CVAR_ARCHIVE );
 	cg_crosshair_strong_color->modified = true;
 
-	cg_clientHUD =		trap_Cvar_Get( "cg_clientHUD", "", CVAR_ARCHIVE );
-	cg_specHUD =		trap_Cvar_Get( "cg_specHUD", "", CVAR_ARCHIVE );
+	cg_clientHUD =		trap_Cvar_Get( "cg_clientHUD", "ale", CVAR_ARCHIVE ); // racemod default clientHud
+	cg_specHUD =		trap_Cvar_Get( "cg_specHUD", "ale", CVAR_ARCHIVE ); // racemod default specHud
 	cg_showTimer =		trap_Cvar_Get( "cg_showTimer", "1", CVAR_ARCHIVE );
 	cg_showSpeed =		trap_Cvar_Get( "cg_showSpeed", "1", CVAR_ARCHIVE ); // racesow - default to 1
 	cg_showPickup =		trap_Cvar_Get( "cg_showPickup", "1", CVAR_ARCHIVE );
