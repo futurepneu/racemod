@@ -10,6 +10,9 @@ cg_effects.cpp, cg_local.h, cg_main.cpp, cg_pmodels.cpp
 cg_ents.cpp, cg_events.cpp, cg_local.h, cg_main.cpp
  * Added racesow raceghostsvolume
 
+gs_pmove.c
+ * Added Hettoos fix for walljumping
+
 
 ## 06.02.2016:
 
