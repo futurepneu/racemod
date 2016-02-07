@@ -1076,6 +1076,10 @@ void CG_CartoonHitEffect( const vec3_t origin, const vec3_t dir, int damage )
 */
 void CG_PModel_SpawnTeleportEffect( centity_t *cent )
 {
+	// racesow
+	if( rs_ignoreTeleEffect->integer )
+		return;
+	// ! racesow
 	int j;
 	cgs_skeleton_t *skel;
 	lentity_t *le;

@@ -13,6 +13,9 @@ cg_ents.cpp, cg_events.cpp, cg_local.h, cg_main.cpp
 gs_pmove.c
  * Added Hettoos fix for walljumping
 
+cg_lents.cpp, cg_local.h, cg_main.cpp
+ * Added racesow fix for ignoring tele effect
+
 
 ## 06.02.2016:
 

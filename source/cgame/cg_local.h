@@ -1122,6 +1122,7 @@ extern cvar_t *cg_playerTrailsColor;
 extern cvar_t *cg_playerTrailsAlpha;
 extern cvar_t *cg_playerTrailsSize;
 extern cvar_t *cg_raceGhostsVolume;
+extern cvar_t *rs_ignoreTeleEffect;
 void CG_AddLinearTrail( centity_t *cent, float lifetime );
 // !racesow
 
