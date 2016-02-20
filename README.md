@@ -1,2 +1,8 @@
 # racemod
-Minimalistic source modification of the "warsow_201_sdk". - Let's try to add as many racesow features as possible!
+Minimalistic source modification of the "warsow_201_sdk".
+
+# Changelog:
+## 20.02.2016:
+
+gs_pmove.c
+ * Added Hettoos fix for walljumping
