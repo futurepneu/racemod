@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define __GS_PUBLIC_H
 
 #include "gs_ref.h"
+#include "gs_racesow.h" // racesow
 
 // shared callbacks
 
@@ -727,6 +728,10 @@ enum
 	, STAT_IMAGE_CLASSACTION1
 	, STAT_IMAGE_CLASSACTION2
 	, STAT_IMAGE_DROP_ITEM
+
+	// racesow - gametype set hud variables
+	, STAT_PREJUMP_STATE
+	// !racesow
 
 	, GS_GAMETYPE_STATS_END = PS_MAX_STATS
 
