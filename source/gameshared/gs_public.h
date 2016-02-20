@@ -729,10 +729,6 @@ enum
 	, STAT_IMAGE_CLASSACTION2
 	, STAT_IMAGE_DROP_ITEM
 
-	// racesow - gametype set hud variables
-	, STAT_PREJUMP_STATE
-	// !racesow
-
 	, GS_GAMETYPE_STATS_END = PS_MAX_STATS
 
 	, MAX_STATS = PS_MAX_STATS //64
