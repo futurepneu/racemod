@@ -918,6 +918,9 @@ void G_InitLevel( char *mapname, char *entities, int entstrlen, unsigned int lev
 	G_Match_LaunchState( MATCH_STATE_WARMUP );
 
 	G_asGarbageCollect( true );
+
+	// racesow
+	RS_Init();
 }
 
 bool G_RespawnLevel( void )

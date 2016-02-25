@@ -700,6 +700,7 @@ void G_FireWeapon( edict_t *ent, int parm )
 	vec3_t origin, angles;
 	vec3_t viewoffset = { 0, 0, 0 };
 	int ucmdSeed;
+	float prestep; // racesow
 
 	weapondef = GS_GetWeaponDef( ( parm & ~EV_INVERSE ) );
 	firedef = ( parm & EV_INVERSE ) ? &weapondef->firedef : &weapondef->firedef_weak;
@@ -720,6 +721,7 @@ void G_FireWeapon( edict_t *ent, int parm )
 	}
 
 	VectorAdd( ent->s.origin, viewoffset, origin );
+	prestep = g_projectile_prestep->value; // racesow
 
 
 	// shoot 
@@ -749,13 +751,25 @@ void G_FireWeapon( edict_t *ent, int parm )
 
 	case WEAP_GRENADELAUNCHER:
 		projectile = G_Fire_Grenade( origin, angles, firedef, ent, ucmdSeed );
+		// racesow - racesow 0.42 had grenade prestep 24
+		if( GS_RaceGametype() )
+			prestep = rs_grenade_prestep->integer;
+		// !racesow
 		break;
 
 	case WEAP_ROCKETLAUNCHER:
 		projectile = G_Fire_Rocket( origin, angles, firedef, ent, ucmdSeed );
+		// racesow - racesow 0.42 had rocket prestep 0
+		if( GS_RaceGametype() )
+			prestep = rs_rocket_prestep->integer;
+		// !racesow
 		break;
 	case WEAP_PLASMAGUN:
 		projectile = G_Fire_Plasma( origin, angles, firedef, ent, ucmdSeed );
+		// racesow - racesow 0.42 had plasma prestep 32
+		if( GS_RaceGametype() )
+			prestep = rs_plasma_prestep->integer;
+		// !racesow
 		break;
 
 	case WEAP_LASERGUN:
@@ -780,7 +794,7 @@ void G_FireWeapon( edict_t *ent, int parm )
 		//if( projectile->s.linearProjectile ) // convert distance to time for linear projectiles
 		//	G_ProjectileTimePrestep( projectile, 1000.0f * ( g_projectile_prestep->value / VectorLengthFast( projectile->velocity ) ) );
 		//else
-			G_ProjectileDistancePrestep( projectile, g_projectile_prestep->value );
+			G_ProjectileDistancePrestep( projectile, prestep ); // racesow - use our prestep
 	}
 
 #ifdef NO_ROCKET_ANTILAG
