@@ -3,6 +3,7 @@
 extern cvar_t *rs_grenade_prestep;
 extern cvar_t *rs_rocket_prestep;
 extern cvar_t *rs_plasma_prestep;
+extern cvar_t *rs_plasma_hack;
 
 void RS_Init( void );
 void RS_Shutdown( void );

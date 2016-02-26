@@ -215,7 +215,7 @@ static void G_ProjectileDistancePrestep( edict_t *projectile, float distance )
 
 	// ffs : hack for the plasmagun
 #ifdef PLASMAHACK
-	if( projectile->s.type == ET_PLASMA )
+	if( projectile->s.type == ET_PLASMA && rs_plasma_hack->integer ) // racesow
 		W_Plasma_Backtrace( projectile, plasma_hack_start );
 #endif
 }
