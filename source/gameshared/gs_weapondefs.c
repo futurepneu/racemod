@@ -419,7 +419,7 @@ gs_weapon_definition_t gs_weaponDefs[] =
 			WEAPONDOWN_FRAMETIME,           // weapon down frametime
 			950,							// reload frametime
 			0,								// cooldown frametime
-			10000,							// projectile timeout
+			100000,							// projectile timeout - racesow - basewsw had (0.6: 10000)
 			false,							// smooth refire
 
 			//damages
@@ -454,7 +454,7 @@ gs_weapon_definition_t gs_weaponDefs[] =
 			WEAPONDOWN_FRAMETIME,           // weapon down frametime
 			950,							// reload frametime
 			0,								// cooldown frametime
-			10000,							// projectile timeout
+			100000,							// projectile timeout - racesow - basewsw had (0.6: 10000)
 			false,							// smooth refire
 
 			//damages
