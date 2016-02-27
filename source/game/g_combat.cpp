@@ -717,6 +717,13 @@ void G_RadiusDamage( edict_t *inflictor, edict_t *attacker, cplane_t *plane, edi
 
 	float maxdamage, mindamage, maxknockback, minknockback, maxstun, minstun, radius;
 
+	// racesow
+	int rs_minKnockback = 0,
+	    rs_maxKnockback = 0,
+	    rs_radius = 0;
+	float rs_splashfrac = 1.3;
+	// !racesow
+
 	assert( inflictor );
 
 	maxdamage = inflictor->projectileInfo.maxDamage;
@@ -759,22 +766,30 @@ void G_RadiusDamage( edict_t *inflictor, edict_t *attacker, cplane_t *plane, edi
 			if( inflictor->s.type == ET_ROCKET )
 				weapondef = GS_GetWeaponDef( WEAP_ROCKETLAUNCHER );
 			else if( inflictor->s.type == ET_GRENADE )
+			{
 				weapondef = GS_GetWeaponDef( WEAP_GRENADELAUNCHER );
+				// racesow
+				rs_minKnockback = rs_grenade_minKnockback->integer;
+				rs_maxKnockback = rs_grenade_maxKnockback->integer;
+				rs_radius = rs_grenade_splash->integer;
+				rs_splashfrac = rs_grenade_splashfrac->value;
+				// !racesow
+			}
 			else if( inflictor->s.type == ET_PLASMA )
 				weapondef = GS_GetWeaponDef( WEAP_PLASMAGUN );
 			else if( inflictor->s.type == ET_BLASTER )
 				weapondef = GS_GetWeaponDef( WEAP_GUNBLADE );
 
-			if( weapondef )
+			// racesow
+			if( weapondef && rs_minKnockback && rs_maxKnockback && rs_radius )
 			{
-				G_SplashFrac4D( ENTNUM( ent ), inflictor->s.origin, radius, pushDir, &kickFrac, NULL, 0 );
+				RS_SplashFrac4D( ENTNUM( ent ), inflictor->s.origin, rs_radius, pushDir, &kickFrac, NULL, 0, rs_splashfrac );
 
-				minknockback = weapondef->firedef.minknockback;
-				maxknockback = weapondef->firedef.knockback;
-				clamp_high( minknockback, maxknockback );
-				knockback = ( minknockback + ( (float)( maxknockback - minknockback ) * kickFrac ) ) * g_self_knockback->value;
+				clamp_high( rs_minKnockback, rs_maxKnockback );
+				knockback = ( rs_minKnockback + ( (float)( rs_maxKnockback - rs_minKnockback ) * kickFrac ) ) * g_self_knockback->value;
 				damage *= weapondef->firedef.selfdamage;
 			}
+			// !racesow
 		}
 
 		if( knockback < 1.0f )

@@ -343,7 +343,7 @@ gs_weapon_definition_t gs_weaponDefs[] =
 			//timings (in msecs)
 			WEAPONUP_FRAMETIME,				// weapon up frametime
 			WEAPONDOWN_FRAMETIME,			// weapon down frametime
-			800,							// reload frametime
+			800,							// reload frametime - racesow - basewsw had (0.6 725, 1.0: 675, 1.1: 725)
 			0,								// cooldown frametime
 			1250,							// projectile timeout
 			false,							// smooth refire
@@ -378,7 +378,7 @@ gs_weapon_definition_t gs_weaponDefs[] =
 			//timings (in msecs)
 			WEAPONUP_FRAMETIME,				// weapon up frametime
 			WEAPONDOWN_FRAMETIME,			// weapon down frametime
-			800,							// reload frametime
+			800,							// reload frametime - racesow - basewsw had (0.6 725, 1.0: 675, 1.1: 725)
 			0,								// cooldown frametime
 			1250,							// projectile timeout
 			false,							// smooth refire

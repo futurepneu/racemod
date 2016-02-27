@@ -8,6 +8,7 @@ cvar_t *rs_grenade_timeout;
 cvar_t *rs_grenade_gravity;
 cvar_t *rs_grenade_friction;
 cvar_t *rs_grenade_prestep;
+cvar_t *rs_grenade_splashfrac;
 cvar_t *rs_rocket_minKnockback;
 cvar_t *rs_rocket_maxKnockback;
 cvar_t *rs_rocket_splash;
@@ -38,6 +39,7 @@ void RS_Init( void )
 	rs_grenade_gravity = trap_Cvar_Get( "rs_grenade_gravity", "1.22", CVAR_ARCHIVE );
 	rs_grenade_friction = trap_Cvar_Get( "rs_grenade_friction", "0.85", CVAR_ARCHIVE );
 	rs_grenade_prestep = trap_Cvar_Get( "rs_grenade_prestep", "24", CVAR_ARCHIVE );
+	rs_grenade_splashfrac = trap_Cvar_Get( "rs_grenade_splashfrac", "2.5", CVAR_ARCHIVE );
 	rs_rocket_minKnockback = trap_Cvar_Get( "rs_rocket_minKnockback", "1", CVAR_ARCHIVE );
 	rs_rocket_maxKnockback = trap_Cvar_Get( "rs_rocket_maxKnockback", "108", CVAR_ARCHIVE );
 	rs_rocket_splash = trap_Cvar_Get( "rs_rocket_splash", "120", CVAR_ARCHIVE );
@@ -68,4 +70,68 @@ void RS_Shutdown( void )
  */
 void RS_Think( void )
 {
+}
+
+/**
+ * RS_SplashFrac
+ * Racesow version of G_SplashFrac by Weqo
+ */
+void RS_SplashFrac( const vec3_t origin, const vec3_t mins, const vec3_t maxs, const vec3_t point, float maxradius, vec3_t pushdir, float *kickFrac, float *dmgFrac, float splashFrac )
+{
+	vec3_t boxcenter = { 0, 0, 0 };
+	float distance = 0;
+	int i;
+	float innerradius;
+	float outerradius;
+	float g_distance;
+	float h_distance;
+
+	if( maxradius <= 0 )
+	{
+		if( kickFrac )
+			*kickFrac = 0;
+		if( dmgFrac)
+			*dmgFrac = 0;
+
+		return;
+	}
+
+	innerradius = ( maxs[0] + maxs[1] - mins[0] - mins[1] ) * 0.25;
+	outerradius = ( maxs[2] - mins[2] ); // cylinder height
+
+	// find center of the box
+	for( i = 0; i < 3; i++ )
+		boxcenter[i] = origin[i] + maxs[i] + mins[i];
+
+	// find box radius to explosion origin direction
+	VectorSubtract( boxcenter, point, pushdir );
+
+	g_distance = sqrt( pushdir[0]*pushdir[0] + pushdir[1]*pushdir[1] ); // distance on virtual ground
+	h_distance = fabs( pushdir[2] );				    // corrected distance in height
+
+	if( ( h_distance <= outerradius / 2 ) || ( g_distance > innerradius ) )
+		distance = g_distance - innerradius;
+
+	if( ( h_distance > outerradius / 2 ) || ( g_distance <= innerradius ) )
+		distance = h_distance - outerradius / 2;
+
+	if( ( h_distance > outerradius / 2 ) || ( g_distance > innerradius ) )
+		distance = sqrt( ( g_distance - innerradius ) * ( g_distance - innerradius ) + ( h_distance - outerradius / 2 ) * ( h_distance - outerradius / 2 ) );
+
+	if( dmgFrac )
+	{
+		// soft sin curve
+		*dmgFrac = sin( DEG2RAD( ( distance / maxradius ) * 80 ) );
+		clamp( *dmgFrac, 0.0f, 1.0f );
+	}
+
+	if( kickFrac )
+	{
+		distance = fabs( distance / maxradius );
+		clamp( distance, 0.0f, 1.0f );
+		*kickFrac = 1.0 - pow( distance, splashFrac );
+	}
+
+	VectorSubtract( boxcenter, point, pushdir );
+	VectorNormalizeFast( pushdir );
 }
