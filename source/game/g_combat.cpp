@@ -776,7 +776,15 @@ void G_RadiusDamage( edict_t *inflictor, edict_t *attacker, cplane_t *plane, edi
 				// !racesow
 			}
 			else if( inflictor->s.type == ET_PLASMA )
+			{
 				weapondef = GS_GetWeaponDef( WEAP_PLASMAGUN );
+				// racesow
+				rs_minKnockback = rs_plasma_minKnockback->integer;
+				rs_maxKnockback = rs_plasma_maxKnockback->integer;
+				rs_radius = rs_plasma_splash->integer;
+				rs_splashfrac = rs_plasma_splashfrac->value;
+				// !racesow
+			}
 			else if( inflictor->s.type == ET_BLASTER )
 				weapondef = GS_GetWeaponDef( WEAP_GUNBLADE );
 
