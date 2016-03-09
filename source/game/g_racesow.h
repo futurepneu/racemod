@@ -15,6 +15,7 @@ extern cvar_t *rs_rocket_splash;
 extern cvar_t *rs_rocket_speed;
 extern cvar_t *rs_rocket_prestep;
 extern cvar_t *rs_rocket_antilag;
+extern cvar_t *rs_rocket_splashfrac;
 extern cvar_t *rs_plasma_minKnockback;
 extern cvar_t *rs_plasma_maxKnockback;
 extern cvar_t *rs_plasma_splash;
@@ -25,6 +26,7 @@ extern cvar_t *rs_plasma_splashfrac;
 extern cvar_t *rs_gunblade_minKnockback;
 extern cvar_t *rs_gunblade_maxKnockback;
 extern cvar_t *rs_gunblade_splash;
+extern cvar_t *rs_gunblade_splashfrac;
 
 void RS_Init( void );
 void RS_Shutdown( void );

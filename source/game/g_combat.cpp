@@ -764,7 +764,15 @@ void G_RadiusDamage( edict_t *inflictor, edict_t *attacker, cplane_t *plane, edi
 		{
 			gs_weapon_definition_t *weapondef = NULL;
 			if( inflictor->s.type == ET_ROCKET )
+			{
 				weapondef = GS_GetWeaponDef( WEAP_ROCKETLAUNCHER );
+				// racesow
+				rs_minKnockback = rs_rocket_minKnockback->integer;
+				rs_maxKnockback = rs_rocket_maxKnockback->integer;
+				rs_radius = rs_rocket_splash->integer;
+				rs_splashfrac = rs_rocket_splashfrac->value;
+				// !racesow
+			}
 			else if( inflictor->s.type == ET_GRENADE )
 			{
 				weapondef = GS_GetWeaponDef( WEAP_GRENADELAUNCHER );
@@ -786,7 +794,15 @@ void G_RadiusDamage( edict_t *inflictor, edict_t *attacker, cplane_t *plane, edi
 				// !racesow
 			}
 			else if( inflictor->s.type == ET_BLASTER )
+			{
 				weapondef = GS_GetWeaponDef( WEAP_GUNBLADE );
+				// racesow - TODO: decide default values
+				rs_minKnockback = rs_gunblade_minKnockback->integer;
+				rs_maxKnockback = rs_gunblade_maxKnockback->integer;
+				rs_radius = rs_gunblade_splash->integer;
+				rs_splashfrac = rs_rocket_splashfrac->value;
+				// !racesow
+			}
 
 			// racesow
 			if( weapondef && rs_minKnockback && rs_maxKnockback && rs_radius )
